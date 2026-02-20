@@ -70,6 +70,32 @@ if [[ -f "$CONFIG_DIR/auto_update_check.sh" ]]; then
     source "$CONFIG_DIR/auto_update_check.sh"
 fi
 
+# Auto-activate virtualenv when entering a directory
+autoload -U add-zsh-hook
+
+_auto_venv() {
+  # Deactivate if we've left the venv's project
+  if [[ -n "$VIRTUAL_ENV" ]]; then
+    local venv_parent="${VIRTUAL_ENV%/*}"
+    if [[ "$PWD" != "$venv_parent"* ]]; then
+      deactivate
+    fi
+  fi
+
+  # Activate if .venv or venv exists
+  if [[ -z "$VIRTUAL_ENV" ]]; then
+    if [[ -f ".venv/bin/activate" ]]; then
+      source .venv/bin/activate
+    elif [[ -f "venv/bin/activate" ]]; then
+      source venv/bin/activate
+    fi
+  fi
+}
+
+add-zsh-hook chpwd _auto_venv
+# Also run on shell startup for the initial directory
+_auto_venv
+
 # Display a random inspirational quote on shell startup
 REPO_DIR=$(dirname "$CONFIG_DIR")
 if [[ -f "$REPO_DIR/start/display_quote.sh" ]]; then
