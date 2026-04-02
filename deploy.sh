@@ -79,11 +79,28 @@ echo "source $SCRIPT_DIR/config/zshrc.sh" > $HOME/.zshrc
 echo "ZSH config deployed to ~/.zshrc"
 
 # Deploy tmux config
-# This creates ~/.tmux.conf which tells tmux to load our custom config
+# oh-my-tmux uses ~/.config/tmux/tmux.conf (installed by install.sh)
+# We symlink our customization file (tmux.conf.local) into the config dir
 echo ""
 echo "--- Configuring Tmux ---"
-echo "source-file $SCRIPT_DIR/config/tmux.conf" > $HOME/.tmux.conf
-echo "Tmux config deployed to ~/.tmux.conf"
+if [ -d "$HOME/.config/tmux" ]; then
+    ln -sfn "$SCRIPT_DIR/config/tmux.conf.local" "$HOME/.config/tmux/tmux.conf.local"
+    echo "Tmux config deployed (oh-my-tmux + local overrides)"
+else
+    # Fallback for systems without oh-my-tmux
+    echo "source-file $SCRIPT_DIR/config/tmux.conf" > $HOME/.tmux.conf
+    echo "Tmux config deployed to ~/.tmux.conf (standalone)"
+fi
+
+# Deploy Ghostty config (macOS only)
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    echo ""
+    echo "--- Configuring Ghostty ---"
+    mkdir -p "$HOME/.config/ghostty"
+    ln -sfn "$SCRIPT_DIR/config/ghostty/config" "$HOME/.config/ghostty/config"
+    ln -sfn "$SCRIPT_DIR/config/ghostty/shaders" "$HOME/.config/ghostty/shaders"
+    echo "Ghostty config deployed to ~/.config/ghostty/"
+fi
 
 # Change default shell to zsh
 # This makes zsh start automatically when you open a new terminal

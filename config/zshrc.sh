@@ -33,12 +33,35 @@ CONFIG_DIR=$(dirname "$(realpath "${(%):-%x}")")
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="powerlevel10k/powerlevel10k"  # The theme that makes terminal look nice
 ZSH_DISABLE_COMPFIX=true  # Don't warn about insecure completion directories
+skip_global_compinit=1    # Skip compinit in oh-my-zsh — we handle it below with caching
 
 # Enable git plugin - adds tab completion for git commands/branches
 plugins=(git)
 
 # Load oh-my-zsh framework
 source "$ZSH/oh-my-zsh.sh"
+
+# Cached compinit — only regenerate dump once per day
+autoload -Uz compinit
+_comp_dump="${ZSH_COMPDUMP:-${ZDOTDIR:-$HOME}/.zcompdump-${SHORT_HOST}-${ZSH_VERSION}}"
+if [[ -f "$_comp_dump" ]]; then
+  # Check if dump is from today (portable: works on both Linux and macOS)
+  local _today=$(date +'%Y%m%d')
+  local _dump_date
+  if [[ "$(uname)" == "Darwin" ]]; then
+    _dump_date=$(stat -f '%Sm' -t '%Y%m%d' "$_comp_dump" 2>/dev/null)
+  else
+    _dump_date=$(stat -c '%y' "$_comp_dump" 2>/dev/null | cut -d' ' -f1 | tr -d '-')
+  fi
+  if [[ "$_today" == "$_dump_date" ]]; then
+    compinit -C -d "$_comp_dump"
+  else
+    compinit -d "$_comp_dump"
+  fi
+else
+  compinit -d "$_comp_dump"
+fi
+unset _comp_dump
 
 # Load powerlevel10k theme config (has all the visual settings)
 source "$CONFIG_DIR/p10k.zsh"

@@ -1,0 +1,4 @@
+keybind = global:alt+grave_accent=toggle_quick_terminal
+clipboard-read = allow
+clipboard-write = allow
+custom-shader = shaders/cursor_warp.glsl

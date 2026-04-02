@@ -100,6 +100,14 @@ if [ -n "$UV_CMD" ]; then
     "$UV_CMD" tool install "huggingface_hub[cli]"
 fi
 
+# Install oh-my-tmux if not already installed
+if [ ! -d "$HOME/.config/tmux" ] || [ ! -f "$HOME/.config/tmux/tmux.conf" ]; then
+    echo ""
+    echo "Installing oh-my-tmux..."
+    mkdir -p "$HOME/.config/tmux"
+    git clone https://github.com/gpakosz/.tmux.git "$HOME/.config/tmux"
+fi
+
 # Install pnpm (Node package manager) if not already installed
 if ! command -v pnpm &> /dev/null; then
     echo ""
