@@ -63,7 +63,8 @@ ski() {
     [ -z "$1" ] && { echo "Usage: ski <name> [sky flags]"; return 1; }
     local name="$1"; shift
     sky launch -y -c "$name" "$@" || return $?
-    ssh "$name" 'test -d ~/.tmux || (git clone --quiet https://github.com/gpakosz/.tmux.git ~/.tmux && ln -sf ~/.tmux/.tmux.conf ~/.tmux.conf && cp ~/.tmux/.tmux.conf.local ~/.tmux.conf.local)'
+    ssh "$name" 'test -d ~/.tmux || (git clone --quiet https://github.com/gpakosz/.tmux.git ~/.tmux && ln -sf ~/.tmux/.tmux.conf ~/.tmux.conf)'
+    scp -q ~/projects/dotfiles/config/tmux.conf.local "$name":~/.tmux.conf.local
     ssh "$name"
 }
 
