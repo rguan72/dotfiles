@@ -10,6 +10,7 @@ alias gau="git add -u"
 alias gaa="git add ."
 alias gco="git checkout"
 alias gcom="git checkout main"
+alias gcm="git commit -m"
 alias gd="git diff"
 alias gdc="git diff --cached"
 alias gg="git grep"
@@ -56,6 +57,45 @@ kill_process_on_port() {
     echo "Process on port $port killed (if it was running)."
 }
 alias kp="kill_process_on_port"
+
+# Launch a SkyPilot cluster and ssh into it
+ski() {
+    [ -z "$1" ] && { echo "Usage: ski <name> [sky flags]"; return 1; }
+    local name="$1"; shift
+    sky launch -y -c "$name" "$@" || return $?
+    ssh "$name"
+}
+
+# `cd` then `ls` automatically
+cd() {
+    builtin cd "$@" && ls
+}
+
+# --- AWS S3 ---
+alias s3ls='aws s3 ls'
+alias s3cp='aws s3 cp'
+alias s3rm='aws s3 rm'
+
+# --- Python / venv ---
+alias va='source .venv/bin/activate'
+
+# --- AI / eval tooling ---
+alias cc='claude'
+alias cdx='codex --sandbox danger-full-access'
+alias ins='inspect eval'
+
+# Inspect eval --model shortcuts (e.g., `ins task.py --model $sonnet`)
+export flash='openrouter/google/gemini-3.1-flash-lite-preview'
+export sonnet='anthropic/claude-sonnet-4-6'
+export haiku='anthropic/claude-haiku-4-5'
+export opus='anthropic/claude-opus-4-6'
+
+# --- Transcript viewers ---
+alias bloomv="npx @isha-gpt/bloom-viewer --port 8080 --dir ./bloom-results"
+alias petriv="npx @kaifronsdal/transcript-viewer@latest --dir ./outputs"
+
+# --- Docker cleanup ---
+alias nuke-insp='docker ps -a --filter "name=inspect-" --format "{{.ID}}" | xargs -r docker rm -f && docker network prune -f'
 
 # --- Utilities ---
 alias ll="ls -al"
