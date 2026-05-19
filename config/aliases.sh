@@ -60,11 +60,25 @@ alias kp="kill_process_on_port"
 
 # Launch a SkyPilot cluster and ssh into it
 ski() {
-    [ -z "$1" ] && { echo "Usage: ski <name> [sky flags]"; return 1; }
+    [ -z "$1" ] && { echo "Usage: ski <name> [--no-teardown|--no-autostop] [sky flags]"; return 1; }
     local name="$1"; shift
-    sky launch -y -c "$name" "$@" || return $?
+    local autostop_args=(-i 720)
+    local sky_args=()
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --no-teardown|--no-autostop)
+                autostop_args=()
+                ;;
+            *)
+                sky_args+=("$1")
+                ;;
+        esac
+        shift
+    done
+    sky launch -y "${autostop_args[@]}" -c "$name" "${sky_args[@]}" || return $?
     ssh "$name" 'test -d ~/.tmux || (git clone --quiet https://github.com/gpakosz/.tmux.git ~/.tmux && ln -sf ~/.tmux/.tmux.conf ~/.tmux.conf)'
     scp -q ~/projects/dotfiles/config/tmux.conf.local "$name":~/.tmux.conf.local
+    ssh "$name" 'command -v gh >/dev/null 2>&1 || { curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo tee /usr/share/keyrings/githubcli-archive-keyring.gpg > /dev/null && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null && sudo apt-get update -qq && sudo apt-get install -y gh; }'
     ssh "$name"
 }
 
