@@ -7,6 +7,8 @@ Bare essentials: nice-looking terminal + development tools.
 **install.sh** - Downloads and installs software (run once per machine)
 - Installs zsh, curl, git
 - Installs oh-my-zsh and powerlevel10k theme
+- Installs zsh autosuggestions, extra completions, and syntax highlighting
+- Installs oh-my-tmux
 - Installs Claude Code, uv, HuggingFace CLI, pnpm, OpenAI Codex
 
 **deploy.sh** - Links your configs (run after install, safe to re-run anytime)
@@ -37,8 +39,9 @@ exec zsh        # Start using it
 
 **Useful features:**
 - Git tab completion (type `git che<tab>` → `git checkout`)
+- Command autosuggestions from history and completions
 - Smart history search (type `git`, press up arrow, cycles through git commands only)
-- 10,000 command history shared across all terminals
+- 10,000 command history saved immediately, with up-arrow scoped to the current terminal session
 - Daily auto-update check for global packages (prompts y/n)
 
 **Tools:**
@@ -62,7 +65,8 @@ dotfiles/
 │   ├── zshrc.sh            # ZSH config (theme + history + git completion)
 │   ├── aliases.sh          # Custom aliases
 │   ├── auto_update_check.sh # Daily update checker for pnpm packages
-│   ├── tmux.conf           # Tmux config (mouse support + colors)
+│   ├── tmux.conf           # Fallback tmux config
+│   ├── tmux.conf.local     # Oh my tmux overrides
 │   └── p10k.zsh            # Powerlevel10k theme settings
 └── start/
     ├── quotes.json         # Inspirational quotes collection
@@ -87,7 +91,10 @@ dotfiles/
 
 After running deploy.sh:
 - `~/.zshrc` → sources this repo's `config/zshrc.sh`
-- `~/.tmux.conf` → sources this repo's `config/tmux.conf`
+- `~/.config/tmux/tmux.conf` → symlinks to Oh my tmux
+- `~/.config/tmux/tmux.conf.local` → symlinks to this repo's `config/tmux.conf.local`
+- `~/.config/ghostty/config` → symlinks to this repo's `config/ghostty/config` on macOS
+- `~/.config/ghostty/shaders` → symlinks to this repo's `config/ghostty/shaders` on macOS
 - `~/.git-credentials` → your GitHub token (if configured)
 - `~/.hf_config.sh` → your HuggingFace home directory (if configured)
 

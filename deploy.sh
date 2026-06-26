@@ -79,11 +79,14 @@ echo "source $SCRIPT_DIR/config/zshrc.sh" > $HOME/.zshrc
 echo "ZSH config deployed to ~/.zshrc"
 
 # Deploy tmux config
-# oh-my-tmux uses ~/.config/tmux/tmux.conf (installed by install.sh)
+# oh-my-tmux uses ~/.config/tmux/tmux.conf and loads tmux.conf.local
 # We symlink our customization file (tmux.conf.local) into the config dir
 echo ""
 echo "--- Configuring Tmux ---"
-if [ -d "$HOME/.config/tmux" ]; then
+OH_MY_TMUX_DIR="$HOME/.local/share/tmux/oh-my-tmux"
+if [ -f "$OH_MY_TMUX_DIR/.tmux.conf" ]; then
+    mkdir -p "$HOME/.config/tmux"
+    ln -sfn "$OH_MY_TMUX_DIR/.tmux.conf" "$HOME/.config/tmux/tmux.conf"
     ln -sfn "$SCRIPT_DIR/config/tmux.conf.local" "$HOME/.config/tmux/tmux.conf.local"
     echo "Tmux config deployed (oh-my-tmux + local overrides)"
 else

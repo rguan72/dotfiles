@@ -67,6 +67,22 @@ if [ ! -d "$HOME/.oh-my-zsh" ]; then
         ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 fi
 
+ZSH_CUSTOM_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+
+install_zsh_plugin() {
+    local name="$1"
+    local repo="$2"
+    local dest="$ZSH_CUSTOM_DIR/plugins/$name"
+    if [ ! -d "$dest" ]; then
+        echo "Installing zsh plugin: $name"
+        git clone --depth=1 "$repo" "$dest"
+    fi
+}
+
+install_zsh_plugin "zsh-autosuggestions" "https://github.com/zsh-users/zsh-autosuggestions.git"
+install_zsh_plugin "zsh-completions" "https://github.com/zsh-users/zsh-completions.git"
+install_zsh_plugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-syntax-highlighting.git"
+
 # Install Claude Code CLI if not already installed
 if ! command -v claude &> /dev/null; then
     echo ""
@@ -101,12 +117,16 @@ if [ -n "$UV_CMD" ]; then
 fi
 
 # Install oh-my-tmux if not already installed
-if [ ! -d "$HOME/.config/tmux" ] || [ ! -f "$HOME/.config/tmux/tmux.conf" ]; then
+OH_MY_TMUX_DIR="$HOME/.local/share/tmux/oh-my-tmux"
+if [ ! -d "$OH_MY_TMUX_DIR" ] || [ ! -f "$OH_MY_TMUX_DIR/.tmux.conf" ]; then
     echo ""
     echo "Installing oh-my-tmux..."
     mkdir -p "$HOME/.config/tmux"
-    git clone https://github.com/gpakosz/.tmux.git "$HOME/.config/tmux"
+    mkdir -p "$(dirname "$OH_MY_TMUX_DIR")"
+    git clone https://github.com/gpakosz/.tmux.git "$OH_MY_TMUX_DIR"
 fi
+mkdir -p "$HOME/.config/tmux"
+ln -sfn "$OH_MY_TMUX_DIR/.tmux.conf" "$HOME/.config/tmux/tmux.conf"
 
 # Install pnpm (Node package manager) if not already installed
 if ! command -v pnpm &> /dev/null; then

@@ -1,30 +1,29 @@
 #!/bin/zsh
 # ZSH configuration - makes terminal look nice and adds useful features
 
-# Prefer user-local bin if present (Linux, sometimes macOS)
-if [ -d "$HOME/.local/bin" ]; then
+_prepend_path_if_dir() {
+  [ -d "$1" ] || return 0
   case ":$PATH:" in
-    *":$HOME/.local/bin:"*) ;;
-    *) export PATH="$HOME/.local/bin:$PATH" ;;
+    *":$1:"*) ;;
+    *) export PATH="$1:$PATH" ;;
   esac
-fi
+}
+
+# Prefer user-local bin if present (Linux, sometimes macOS)
+_prepend_path_if_dir "$HOME/.local/bin"
 
 # pnpm global packages
-if [ -d "$HOME/.local/share/pnpm" ]; then
+if [ -d "$HOME/Library/pnpm" ]; then
+  export PNPM_HOME="$HOME/Library/pnpm"
+elif [ -d "$HOME/.local/share/pnpm" ]; then
   export PNPM_HOME="$HOME/.local/share/pnpm"
-  case ":$PATH:" in
-    *":$PNPM_HOME:"*) ;;
-    *) export PATH="$PNPM_HOME:$PATH" ;;
-  esac
+fi
+if [ -n "${PNPM_HOME:-}" ]; then
+  _prepend_path_if_dir "$PNPM_HOME"
 fi
 
 # Homebrew on Apple Silicon
-if [ -d "/opt/homebrew/bin" ]; then
-  case ":$PATH:" in
-    *":/opt/homebrew/bin:"*) ;;
-    *) export PATH="/opt/homebrew/bin:$PATH" ;;
-  esac
-fi
+_prepend_path_if_dir "/opt/homebrew/bin"
 
 # Get the directory where this config file lives
 CONFIG_DIR=$(dirname "$(realpath "${(%):-%x}")")
@@ -33,10 +32,22 @@ CONFIG_DIR=$(dirname "$(realpath "${(%):-%x}")")
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="powerlevel10k/powerlevel10k"  # The theme that makes terminal look nice
 ZSH_DISABLE_COMPFIX=true  # Don't warn about insecure completion directories
+DISABLE_COMPFIX=true
 skip_global_compinit=1    # Skip compinit in oh-my-zsh — we handle it below with caching
 
-# Enable git plugin - adds tab completion for git commands/branches
+# Enable git completion plus optional local plugins installed by install.sh.
 plugins=(git)
+ZSH_CUSTOM="${ZSH_CUSTOM:-$ZSH/custom}"
+if [[ -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]]; then
+  plugins+=(zsh-autosuggestions)
+  ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+fi
+if [[ -d "$ZSH_CUSTOM/plugins/zsh-completions/src" ]]; then
+  fpath=("$ZSH_CUSTOM/plugins/zsh-completions/src" $fpath)
+fi
+if [[ -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]]; then
+  plugins+=(zsh-syntax-highlighting)
+fi
 
 # Load oh-my-zsh framework
 source "$ZSH/oh-my-zsh.sh"
@@ -69,7 +80,8 @@ source "$CONFIG_DIR/p10k.zsh"
 # History settings - remember commands across sessions
 HISTSIZE=10000              # Remember 10,000 commands in memory
 SAVEHIST=10000              # Save 10,000 commands to disk
-setopt SHARE_HISTORY        # Share history across all terminal windows
+unsetopt SHARE_HISTORY      # Keep up-arrow focused on this terminal session
+setopt INC_APPEND_HISTORY   # Save commands to disk immediately
 setopt HIST_IGNORE_DUPS     # Don't save duplicate commands
 setopt HIST_IGNORE_SPACE    # Don't save commands that start with a space
 
@@ -124,3 +136,5 @@ REPO_DIR=$(dirname "$CONFIG_DIR")
 if [[ -f "$REPO_DIR/start/display_quote.sh" ]]; then
     bash "$REPO_DIR/start/display_quote.sh"
 fi
+
+unset -f _prepend_path_if_dir
