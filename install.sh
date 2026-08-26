@@ -74,11 +74,12 @@ if [ "$machine" == "Mac" ]; then
 fi
 
 # Check if basic tools are installed, install if missing
-echo "Checking for zsh, curl, git..."
+echo "Checking for zsh, curl, git, tmux..."
 missing_tools=()
 command -v zsh &> /dev/null || missing_tools+=("zsh")
 command -v curl &> /dev/null || missing_tools+=("curl")
 command -v git &> /dev/null || missing_tools+=("git")
+command -v tmux &> /dev/null || missing_tools+=("tmux")
 
 if [ ${#missing_tools[@]} -eq 0 ]; then
     echo "All required tools are already installed!"
@@ -223,6 +224,7 @@ if [ ! -d "$OH_MY_TMUX_DIR" ] || [ ! -f "$OH_MY_TMUX_DIR/.tmux.conf" ]; then
 fi
 mkdir -p "$HOME/.config/tmux"
 ln -sfn "$OH_MY_TMUX_DIR/.tmux.conf" "$HOME/.config/tmux/tmux.conf"
+ln -sfn "$SCRIPT_DIR/config/tmux.conf.local" "$HOME/.config/tmux/tmux.conf.local"
 
 # Install pnpm (Node package manager) if not already installed
 if ! command -v pnpm &> /dev/null; then

@@ -5,7 +5,7 @@ Bare essentials: nice-looking terminal + development tools.
 ## Install vs Deploy
 
 **install.sh** - Downloads and installs software (run once per machine)
-- Installs zsh, curl, git, and Node.js
+- Installs zsh, curl, git, tmux, and Node.js
 - Installs oh-my-zsh and powerlevel10k theme
 - Installs zsh autosuggestions, extra completions, and syntax highlighting
 - Installs custom aliases into oh-my-zsh
