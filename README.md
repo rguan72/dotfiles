@@ -8,12 +8,16 @@ Bare essentials: nice-looking terminal + development tools.
 - Installs zsh, curl, git
 - Installs oh-my-zsh and powerlevel10k theme
 - Installs zsh autosuggestions, extra completions, and syntax highlighting
+- Installs custom aliases into oh-my-zsh
+- Installs the Ghostty config and cursor shaders on macOS
 - Installs oh-my-tmux
 - Installs Claude Code, uv, HuggingFace CLI, pnpm, OpenAI Codex
 
 **deploy.sh** - Links your configs (run after install, safe to re-run anytime)
 - Creates `~/.zshrc` that points to your zsh config
+- Links custom aliases into oh-my-zsh
 - Creates `~/.tmux.conf` that points to your tmux config
+- Links the Ghostty config and cursor shaders on macOS
 - Optionally configures GitHub and HuggingFace authentication
 - Sets zsh as your default shell
 

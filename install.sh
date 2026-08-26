@@ -24,6 +24,55 @@ esac
 echo "OS: $machine"
 echo ""
 
+# Add Homebrew to PATH when it is installed in a standard location but is not
+# available in this non-interactive shell yet.
+activate_homebrew() {
+    local brew_bin
+
+    if command -v brew &> /dev/null; then
+        return 0
+    fi
+
+    for brew_bin in \
+        /opt/homebrew/bin/brew \
+        /usr/local/bin/brew \
+        /home/linuxbrew/.linuxbrew/bin/brew \
+        "$HOME/.linuxbrew/bin/brew"; do
+        if [ -x "$brew_bin" ]; then
+            eval "$("$brew_bin" shellenv)"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+install_homebrew() {
+    if activate_homebrew; then
+        echo "Homebrew is already installed!"
+        return
+    fi
+
+    if ! command -v curl &> /dev/null; then
+        echo "Error: curl is required to install Homebrew."
+        exit 1
+    fi
+
+    echo "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+    if ! activate_homebrew; then
+        echo "Error: Homebrew was installed but could not be found in PATH."
+        exit 1
+    fi
+}
+
+# macOS includes curl, and the Homebrew installer can bootstrap Apple's command
+# line tools. Homebrew must be available before it can install any missing tools.
+if [ "$machine" == "Mac" ]; then
+    install_homebrew
+fi
+
 # Check if basic tools are installed, install if missing
 echo "Checking for zsh, curl, git..."
 missing_tools=()
@@ -54,6 +103,18 @@ else
     fi
 fi
 
+# Linux needs curl and git before the Homebrew installer can run.
+if [ "$machine" == "Linux" ]; then
+    install_homebrew
+fi
+
+# Install GitHub CLI if it is not already available.
+if ! command -v gh &> /dev/null; then
+    echo ""
+    echo "Installing GitHub CLI..."
+    brew install gh
+fi
+
 # Install oh-my-zsh (zsh framework) and powerlevel10k theme (makes terminal look nice)
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     echo ""
@@ -68,6 +129,24 @@ if [ ! -d "$HOME/.oh-my-zsh" ]; then
 fi
 
 ZSH_CUSTOM_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+
+# Install aliases where oh-my-zsh automatically loads custom *.zsh files.
+# config/zshrc.sh also sources this file directly so the aliases keep working
+# when oh-my-zsh is unavailable or a different ZSH_CUSTOM is used later.
+echo ""
+echo "Installing shell aliases..."
+mkdir -p "$ZSH_CUSTOM_DIR"
+ln -sfn "$SCRIPT_DIR/config/aliases.sh" "$ZSH_CUSTOM_DIR/aliases.zsh"
+
+# Install Ghostty's config and cursor shaders on macOS. Keep these as symlinks
+# so edits made in the dotfiles repo take effect without another install.
+if [ "$machine" == "Mac" ]; then
+    echo ""
+    echo "Installing Ghostty config and shaders..."
+    mkdir -p "$HOME/.config/ghostty"
+    ln -sfn "$SCRIPT_DIR/config/ghostty/config" "$HOME/.config/ghostty/config"
+    ln -sfn "$SCRIPT_DIR/config/ghostty/shaders" "$HOME/.config/ghostty/shaders"
+fi
 
 install_zsh_plugin() {
     local name="$1"

@@ -78,6 +78,14 @@ echo "--- Configuring ZSH ---"
 echo "source $SCRIPT_DIR/config/zshrc.sh" > $HOME/.zshrc
 echo "ZSH config deployed to ~/.zshrc"
 
+# Also install aliases in oh-my-zsh's custom directory. This makes them
+# available to an existing oh-my-zsh config even before the shell is restarted
+# with the repo's full zsh configuration.
+ZSH_CUSTOM_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+mkdir -p "$ZSH_CUSTOM_DIR"
+ln -sfn "$SCRIPT_DIR/config/aliases.sh" "$ZSH_CUSTOM_DIR/aliases.zsh"
+echo "ZSH aliases deployed to $ZSH_CUSTOM_DIR/aliases.zsh"
+
 # Deploy tmux config
 # oh-my-tmux uses ~/.config/tmux/tmux.conf and loads tmux.conf.local
 # We symlink our customization file (tmux.conf.local) into the config dir
