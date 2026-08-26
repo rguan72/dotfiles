@@ -20,6 +20,7 @@ elif [ -d "$HOME/.local/share/pnpm" ]; then
 fi
 if [ -n "${PNPM_HOME:-}" ]; then
   _prepend_path_if_dir "$PNPM_HOME"
+  _prepend_path_if_dir "$PNPM_HOME/bin"
 fi
 
 # Homebrew on Apple Silicon

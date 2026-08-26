@@ -133,10 +133,23 @@ if ! command -v pnpm &> /dev/null; then
     echo ""
     echo "Installing pnpm..."
     curl -fsSL https://get.pnpm.io/install.sh | sh -
+fi
 
-    # Make pnpm available immediately in this script
-    export PNPM_HOME="$HOME/.local/share/pnpm"
-    export PATH="$PNPM_HOME:$PATH"
+# The pnpm installer updates the user's shell config, but those changes are not
+# loaded into this already-running script. Add pnpm's platform-specific install
+# directory here so Codex can be installed without sourcing ~/.zshrc first.
+if ! command -v pnpm &> /dev/null; then
+    if [ "$machine" == "Mac" ]; then
+        export PNPM_HOME="$HOME/Library/pnpm"
+    else
+        export PNPM_HOME="$HOME/.local/share/pnpm"
+    fi
+    export PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH"
+fi
+
+if ! command -v pnpm &> /dev/null; then
+    echo "Error: pnpm was installed but could not be found in PATH."
+    exit 1
 fi
 
 # Install OpenAI Codex using pnpm
