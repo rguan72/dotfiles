@@ -5,10 +5,11 @@ Bare essentials: nice-looking terminal + development tools.
 ## Install vs Deploy
 
 **install.sh** - Downloads and installs software (run once per machine)
-- Installs zsh, curl, git
+- Installs zsh, curl, git, and Node.js
 - Installs oh-my-zsh and powerlevel10k theme
 - Installs zsh autosuggestions, extra completions, and syntax highlighting
 - Installs custom aliases into oh-my-zsh
+- Installs the Vim configuration
 - Installs the Ghostty config and cursor shaders on macOS
 - Installs oh-my-tmux
 - Installs Claude Code, uv, HuggingFace CLI, pnpm, OpenAI Codex
@@ -16,6 +17,7 @@ Bare essentials: nice-looking terminal + development tools.
 **deploy.sh** - Links your configs (run after install, safe to re-run anytime)
 - Creates `~/.zshrc` that points to your zsh config
 - Links custom aliases into oh-my-zsh
+- Links the Vim configuration to `~/.vimrc`
 - Creates `~/.tmux.conf` that points to your tmux config
 - Links the Ghostty config and cursor shaders on macOS
 - Optionally configures GitHub and HuggingFace authentication
@@ -69,6 +71,7 @@ dotfiles/
 │   ├── zshrc.sh            # ZSH config (theme + history + git completion)
 │   ├── aliases.sh          # Custom aliases
 │   ├── auto_update_check.sh # Daily update checker for pnpm packages
+│   ├── vimrc               # Vim configuration
 │   ├── tmux.conf           # Fallback tmux config
 │   ├── tmux.conf.local     # Oh my tmux overrides
 │   └── p10k.zsh            # Powerlevel10k theme settings
@@ -97,6 +100,7 @@ After running deploy.sh:
 - `~/.zshrc` → sources this repo's `config/zshrc.sh`
 - `~/.config/tmux/tmux.conf` → symlinks to Oh my tmux
 - `~/.config/tmux/tmux.conf.local` → symlinks to this repo's `config/tmux.conf.local`
+- `~/.vimrc` → symlinks to this repo's `config/vimrc`
 - `~/.config/ghostty/config` → symlinks to this repo's `config/ghostty/config` on macOS
 - `~/.config/ghostty/shaders` → symlinks to this repo's `config/ghostty/shaders` on macOS
 - `~/.git-credentials` → your GitHub token (if configured)

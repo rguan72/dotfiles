@@ -86,6 +86,12 @@ mkdir -p "$ZSH_CUSTOM_DIR"
 ln -sfn "$SCRIPT_DIR/config/aliases.sh" "$ZSH_CUSTOM_DIR/aliases.zsh"
 echo "ZSH aliases deployed to $ZSH_CUSTOM_DIR/aliases.zsh"
 
+# Deploy Vim config
+echo ""
+echo "--- Configuring Vim ---"
+ln -sfn "$SCRIPT_DIR/config/vimrc" "$HOME/.vimrc"
+echo "Vim config deployed to ~/.vimrc"
+
 # Deploy tmux config
 # oh-my-tmux uses ~/.config/tmux/tmux.conf and loads tmux.conf.local
 # We symlink our customization file (tmux.conf.local) into the config dir

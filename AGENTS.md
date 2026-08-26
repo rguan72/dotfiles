@@ -12,6 +12,7 @@ This repo configures my local laptop terminal environment. Keep changes practica
 - `deploy.sh`: safe re-run deployment that links config files into `$HOME`.
 - `config/zshrc.sh`: main zsh setup, completion, history, theme loading, auto-venv, startup quote.
 - `config/aliases.sh`: shell aliases and helper functions.
+- `config/vimrc`: Vim configuration linked to `~/.vimrc`.
 - `config/ghostty/config`: Ghostty terminal config.
 - `config/ghostty/shaders/`: Ghostty cursor shaders.
 - `config/tmux.conf`: fallback/standalone tmux config.

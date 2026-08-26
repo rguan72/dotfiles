@@ -115,6 +115,19 @@ if ! command -v gh &> /dev/null; then
     brew install gh
 fi
 
+# pnpm can be installed as a standalone executable, but packages installed by
+# pnpm (including Codex) still need the Node.js runtime.
+if ! command -v node &> /dev/null; then
+    echo ""
+    echo "Installing Node.js..."
+    brew install node
+fi
+
+if ! command -v node &> /dev/null; then
+    echo "Error: Node.js was installed but could not be found in PATH."
+    exit 1
+fi
+
 # Install oh-my-zsh (zsh framework) and powerlevel10k theme (makes terminal look nice)
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     echo ""
@@ -137,6 +150,10 @@ echo ""
 echo "Installing shell aliases..."
 mkdir -p "$ZSH_CUSTOM_DIR"
 ln -sfn "$SCRIPT_DIR/config/aliases.sh" "$ZSH_CUSTOM_DIR/aliases.zsh"
+
+echo ""
+echo "Installing Vim config..."
+ln -sfn "$SCRIPT_DIR/config/vimrc" "$HOME/.vimrc"
 
 # Install Ghostty's config and cursor shaders on macOS. Keep these as symlinks
 # so edits made in the dotfiles repo take effect without another install.
